@@ -8,7 +8,7 @@ __TODO__:
   
 To contribute:
   * Fork this repo.
-  * Clone it via `git clone https://github.com/dsquareindia/CMFS-Feature-Selection/`.
+  * Clone your forked repo via `git clone <repo URL>`.
   * Create new branch via `git checkout -b branch-name`.
   * Stage files via `git add file-name`.
   * Commit via `git commit -m "message"`.
