@@ -14,6 +14,6 @@ To contribute:
   * Push via `git push -u origin branch-name`.
 
 Current Dependencies:
-  * [Gensim](https://radimrehurek.com/gensim/index.html)
+  * [Scikit-lear](http://scikit-learn.org/stable/install.html)
   * [Numpy](http://www.numpy.org/)
   * Run the notebook via [Jupyter notebook](http://jupyter.readthedocs.org/en/latest/install.html)
