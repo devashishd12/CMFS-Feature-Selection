@@ -1,9 +1,7 @@
 # CMFS Algorithm for feature selection
 
-This is a python implementation of the CMFS algorithm for feature selection (paper included in the repository). Currently the implementation has only been completed on a toy dataset.
+This is a python implementation of the CMFS algorithm for feature selection (paper included in the repository). Currently the implementation has been completed on a toy dataset and the 20NG dataset.
 
-__TODO__:
-  * Perform benchmark testing against Chi-square, IG feature selection algos on same dataset.
   
 To contribute:
   * Fork this repo.
@@ -14,6 +12,6 @@ To contribute:
   * Push via `git push -u origin branch-name`.
 
 Current Dependencies:
-  * [Gensim](https://radimrehurek.com/gensim/index.html)
+  * [Scikit-learn](http://scikit-learn.org/stable/install.html)
   * [Numpy](http://www.numpy.org/)
   * Run the notebook via [Jupyter notebook](http://jupyter.readthedocs.org/en/latest/install.html)
