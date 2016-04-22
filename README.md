@@ -2,8 +2,6 @@
 
 This is a python implementation of the CMFS algorithm for feature selection (paper included in the repository). Currently the implementation has been completed on a toy dataset and the 20NG dataset.
 
-__TODO__:
-  * Perform benchmark testing against Chi-square, IG feature selection algos on same dataset.
   
 To contribute:
   * Fork this repo.
