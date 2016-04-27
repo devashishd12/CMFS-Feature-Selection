@@ -1,6 +1,6 @@
-# CMFS Algorithm for feature selection
+# iCMFS + IGFSS Algorithm for feature selection
 
-This is a python implementation of the CMFS algorithm for feature selection (paper included in the repository). Currently the implementation has been completed on a toy dataset and the 20NG dataset.
+This is a python implementation of the iCMFS + IGFSS (using correlation coefficient) algorithm for feature selection (papers included in the repository). Currently the implementation has been completed on a toy dataset and the 20NG dataset.
 
   
 To contribute:
