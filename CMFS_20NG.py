@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import operator
 import math
-# get_ipython().magic(u'matplotlib inline')
+get_ipython().magic(u'matplotlib inline')
 
 
 # In[2]:
@@ -116,17 +116,18 @@ for i in range(terms):
 
 # ### Extract top 2000 features
 
-# In[38]:
+# In[9]:
 
 sorted_feature_list_cmfs = sorted(term_cmfs_dict.items(), key=operator.itemgetter(1), reverse=True)[:2000]
 sorted_feature_list_icmfs = sorted(term_icmfs_dict.items(), key=operator.itemgetter(1), reverse=True)[:2000]
 # to use for IGFSS
 sorted_feature_list_icmfs_4000 = sorted(term_icmfs_dict.items(), key=operator.itemgetter(1), reverse=True)[:4000]
+sorted_feature_list_cmfs_4000 = sorted(term_cmfs_dict.items(), key=operator.itemgetter(1), reverse=True)[:4000]
 
 
 # ### Plug in IGFSS
 
-# In[41]:
+# In[10]:
 
 max_feature_column_cc = np.argmax(np.abs(cc_term_category_mat), axis = 1)
 max_feature_sign_cc = np.empty_like(max_feature_column_cc)
@@ -135,11 +136,12 @@ for term in range(len(max_feature_column_cc)):
     max_feature_sign_cc[term] = np.sign(cc_term_category_mat[term][max_val_col])
 
 
-# In[42]:
+# In[11]:
 
 cat_positive_negative = np.zeros(shape=(categories, 2), dtype=int)
-final_term_list = []
 nfrs = 0.4
+
+final_term_list_ICMFS = []
 for term, icmfs in sorted_feature_list_icmfs_4000:
     sign = max_feature_sign_cc[term]
     cat = max_feature_column_cc[term]
@@ -148,22 +150,41 @@ for term, icmfs in sorted_feature_list_icmfs_4000:
         if sign > 0:
             if (((float(cat_positive_negative[cat, 0]) / 10) < (1 - nfrs))):
                 cat_positive_negative[cat, 0] += 1
-                final_term_list.append(term)
+                final_term_list_ICMFS.append(term)
         else:
             cat_positive_negative[cat, 1] += 1
-            final_term_list.append(term)
+            final_term_list_ICMFS.append(term)
+
+cat_positive_negative = np.zeros(shape=(categories, 2), dtype=int)
+final_term_list_CMFS = []
+for term, icmfs in sorted_feature_list_cmfs_4000:
+    sign = max_feature_sign_cc[term]
+    cat = max_feature_column_cc[term]
+    if (((float(cat_positive_negative[cat, 1]) / 100) < nfrs) and
+        ((cat_positive_negative[cat, 0] + cat_positive_negative[cat, 1]) < 10)):
+        if sign > 0:
+            if (((float(cat_positive_negative[cat, 0]) / 10) < (1 - nfrs))):
+                cat_positive_negative[cat, 0] += 1
+                final_term_list_CMFS.append(term)
+        else:
+            cat_positive_negative[cat, 1] += 1
+            final_term_list_CMFS.append(term)
 
 
-# In[43]:
+# In[12]:
 
 for term, icmfs in sorted_feature_list_icmfs:
-    if term not in final_term_list and len(final_term_list) < 2000:
-        final_term_list.append(term)
+    if term not in final_term_list_ICMFS and len(final_term_list_ICMFS) < 2000:
+        final_term_list_ICMFS.append(term)
+        
+for term, cmfs in sorted_feature_list_cmfs:
+    if term not in final_term_list_CMFS and len(final_term_list_CMFS) < 2000:
+        final_term_list_CMFS.append(term)
 
 
 # ### Naive bayes
 
-# In[44]:
+# In[13]:
 
 feature_list_cmfs = [term for term, _ in sorted_feature_list_cmfs]
 # Create matrix for only the selected features. Note that the features are being extracted
@@ -177,32 +198,42 @@ feature_list_icmfs = [term for term, _ in sorted_feature_list_icmfs]
 selected_feature_matrix_icmfs = document_term_mat[:, feature_list_icmfs]
 print selected_feature_matrix_icmfs.shape
 
-selected_feature_matrix_final = document_term_mat[:, final_term_list]
-print selected_feature_matrix_final.shape
+selected_feature_matrix_final_ICMFS = document_term_mat[:, final_term_list_ICMFS]
+print selected_feature_matrix_final_ICMFS.shape
+
+selected_feature_matrix_final_CMFS = document_term_mat[:, final_term_list_CMFS]
+print selected_feature_matrix_final_CMFS.shape
 
 
-# In[45]:
+# In[14]:
 
 newsgroups_test = fetch_20newsgroups(subset='test', remove=('headers', 'footers', 'quotes'))
 document_term_mat_test = vec.transform(newsgroups_test.data)
 clf_cmfs = MultinomialNB().fit(selected_feature_matrix_cmfs, newsgroups_train.target)
 clf_icmfs = MultinomialNB().fit(selected_feature_matrix_icmfs, newsgroups_train.target)
-clf_final = MultinomialNB().fit(selected_feature_matrix_final, newsgroups_train.target)
+clf_final_ICMFS = MultinomialNB().fit(selected_feature_matrix_final_ICMFS, newsgroups_train.target)
+clf_final_CMFS = MultinomialNB().fit(selected_feature_matrix_final_CMFS, newsgroups_train.target)
 
 
 # ### Evaluate accuracy
 
-# In[46]:
+# In[15]:
 
 pred_cmfs = clf_cmfs.predict(document_term_mat_test[:, feature_list_cmfs])
 print metrics.f1_score(newsgroups_test.target, pred_cmfs, average='micro')
+
+pred_final_cmfs = clf_final_CMFS.predict(document_term_mat_test[:, final_term_list_CMFS])
+print metrics.f1_score(newsgroups_test.target, pred_final_cmfs, average='micro')
+
 pred_icmfs = clf_icmfs.predict(document_term_mat_test[:, feature_list_icmfs])
 print metrics.f1_score(newsgroups_test.target, pred_icmfs, average='micro')
-pred_final = clf_final.predict(document_term_mat_test[:, final_term_list])
-print metrics.f1_score(newsgroups_test.target, pred_final, average='micro')
+
+pred_final_icmfs = clf_final_ICMFS.predict(document_term_mat_test[:, final_term_list_ICMFS])
+print metrics.f1_score(newsgroups_test.target, pred_final_icmfs, average='micro')
 
 
-# In[54]:
+
+# In[16]:
 
 icmfs_scores = []
 for i in range(200, 2001, 200):
@@ -222,19 +253,28 @@ for i in range(200, 2001, 200):
     f1_score_cmfs = metrics.f1_score(newsgroups_test.target, pred_cmfs, average='micro')
     cmfs_scores.append(f1_score_cmfs * 100)
 
-final_scores = []
+final_scores_ICMFS = []
 for i in range(200, 2001, 200):
-    feature_list_final = [term for term in final_term_list[:i]]
-    selected_feature_matrix_final = document_term_mat[:, feature_list_final]
-    clf_final = MultinomialNB().fit(selected_feature_matrix_final, newsgroups_train.target)
-    pred_final = clf_final.predict(document_term_mat_test[:, feature_list_final])
-    f1_score_final = metrics.f1_score(newsgroups_test.target, pred_final, average='micro')
-    final_scores.append(f1_score_final * 100)
+    feature_list_final_ICMFS = [term for term in final_term_list_ICMFS[:i]]
+    selected_feature_matrix_final_ICMFS = document_term_mat[:, feature_list_final_ICMFS]
+    clf_final_ICMFS = MultinomialNB().fit(selected_feature_matrix_final_ICMFS, newsgroups_train.target)
+    pred_final_ICMFS = clf_final_ICMFS.predict(document_term_mat_test[:, feature_list_final_ICMFS])
+    f1_score_final_ICMFS = metrics.f1_score(newsgroups_test.target, pred_final_ICMFS, average='micro')
+    final_scores_ICMFS.append(f1_score_final_ICMFS * 100)
+    
+final_scores_CMFS = []
+for i in range(200, 2001, 200):
+    feature_list_final_CMFS = [term for term in final_term_list_CMFS[:i]]
+    selected_feature_matrix_final_CMFS = document_term_mat[:, feature_list_final_CMFS]
+    clf_final_CMFS = MultinomialNB().fit(selected_feature_matrix_final_CMFS, newsgroups_train.target)
+    pred_final_CMFS = clf_final_CMFS.predict(document_term_mat_test[:, feature_list_final_CMFS])
+    f1_score_final_CMFS = metrics.f1_score(newsgroups_test.target, pred_final_CMFS, average='micro')
+    final_scores_CMFS.append(f1_score_final_CMFS * 100)
 
 
 # ### Test with chi2
 
-# In[55]:
+# In[17]:
 
 ch2_scores = []
 for i in range(200, 2001, 200):
@@ -249,13 +289,12 @@ for i in range(200, 2001, 200):
 
 # ### Plot Accuracy vs Number of features graph
 
-# In[56]:
+# In[18]:
 
 x = [i for i in range(200, 2001, 200)]
-plt.plot(x, icmfs_scores, x, ch2_scores, x, cmfs_scores, x, final_scores)
+plt.plot(x, icmfs_scores, x, ch2_scores, x, cmfs_scores, x, final_scores_ICMFS, x, final_scores_CMFS)
 plt.xlabel("No of features")
 plt.ylabel("Accuracy")
-plt.legend(("ICMFS", "chi2", "CMFS", "IGFSS"), loc='best')
+plt.legend(("ICMFS", "chi2", "CMFS", "IGFSS+ICMFS","IGFSS+CMFS"), loc='best')
 plt.show()
-
 
