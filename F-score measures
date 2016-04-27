@@ -1,0 +1,56 @@
+Format:
+
+CMFS
+iCMFS
+CMFS + IGFSS
+iCMFS + IGFSS
+
+
+200 features
+
+0.477562400425
+0.484466277217
+0.481545406267
+0.488050982475
+
+
+400 features
+
+0.54102496017
+0.540759426447
+0.541688794477
+0.54965480616
+
+
+1000 features
+
+
+0.594795539033
+0.593733404142
+0.588289962825
+0.590414232608
+
+
+1600 features
+
+
+0.601301115242
+0.602230483271
+0.617233138609
+0.616569304302
+
+
+2000 features
+
+0.592272968667
+0.592007434944
+0.62599575146
+0.625066383431
+
+
+Some analysis:
+
+IGFSS almost always has a better performance, but performs very well on lower number of features. Of course, this could be because 
+of the nfrs value which we should change accordingly.
+
+Our version of iCMFS always outperforms normal CMFS.
