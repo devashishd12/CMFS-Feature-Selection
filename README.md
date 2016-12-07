@@ -2,6 +2,8 @@
 
 This is a python implementation of the iCMFS + IGFSS (using correlation coefficient) algorithm for feature selection (papers included in the repository). Currently the implementation has been completed on a toy dataset and the 20NG dataset.
 
+See `report.pdf` for an explanation and the results of our experimentation.
+
   
 To contribute:
   * Fork this repo.
